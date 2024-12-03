@@ -140,9 +140,10 @@ DEFAULT_MEMORY_CONFIGS = [
 A list of Todo's the user needs to complete.
 Todo's are classified by project and priority. 
 Important and Urgent = Tasks that require immediate attention and are critical to your goals. Crises, pressing problems, projects with imminent deadlines.
-Important but Not Urgent = Activities essential for long-term growth but do not demand immediate attention. Strategic planning, personal development, building relationships, prevention.
-Not Important but Urgent = Tasks that seem urgent but do not significantly contribute to your objectives.Interruptions, some phone calls, emails, and meetings that distract.
-Not Important and Not Urgent = Activities that do not add value and consume time unnecessarily. Aimless internet browsing, excessive television watching, trivial tasks.
+Important but Not Urgent = Activities essential for long-term growth but do not demand immediate attention. Strategic planning, personal development, prevention.
+Not Important but Urgent = Tasks that seem urgent but do not significantly contribute to your objectives. Interruptions, some phone calls, emails, and meetings that distract.
+Do not duplicate Todo's.
+Store only user todo's ( exclude assistant todo's ).
 """,
         update_mode="patch",
         parameters={
