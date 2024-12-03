@@ -2,6 +2,8 @@
 
 from dataclasses import dataclass
 from datetime import datetime, timezone
+import logging
+from langgraph.graph import StateGraph, MessagesState, START, END
 
 from langchain_core.runnables import RunnableConfig
 from langgraph.graph import StateGraph
@@ -11,8 +13,10 @@ from langgraph_sdk import get_client
 from typing_extensions import Annotated
 
 from chatbot.configuration import ChatConfigurable
+from chatbot.todoist_tool import get_tasks, tasks_tools_node, tasks_tools
 from chatbot.utils import format_memories, init_model
 
+logger = logging.getLogger("memory")
 
 @dataclass
 class ChatState:
@@ -20,6 +24,13 @@ class ChatState:
 
     messages: Annotated[list[Messages], add_messages]
 
+
+def should_continue(state: ChatState):
+    messages = state.messages
+    last_message = messages[-1]
+    if last_message.tool_calls:
+        return "tasks_tools_node"
+    return "schedule_memories"
 
 async def bot(
     state: ChatState, config: RunnableConfig, store: BaseStore
@@ -29,12 +40,15 @@ async def bot(
     namespace = (configurable.user_id,)
     # This lists ALL user memories in the provided namespace (up to the `limit`)
     # you can also filter by content.
-    items = await store.asearch(namespace)
 
-    model = init_model(configurable.model)
+    tasks = get_tasks()
+    items = await store.asearch(namespace)
+    logger.info(f"Found {tasks}")
+    model = init_model(configurable.model).bind_tools(tasks_tools)
     prompt = configurable.system_prompt.format(
         user_info=format_memories(items),
         time=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
+        actual_tasks=tasks,
     )
     m = await model.ainvoke(
         [{"role": "system", "content": prompt}, *state.messages],
@@ -80,9 +94,11 @@ async def schedule_memories(state: ChatState, config: RunnableConfig) -> None:
 
 builder = StateGraph(ChatState, config_schema=ChatConfigurable)
 builder.add_node(bot)
+builder.add_node("tasks_tools_node", tasks_tools_node)
 builder.add_node(schedule_memories)
 
 builder.add_edge("__start__", "bot")
-builder.add_edge("bot", "schedule_memories")
+builder.add_conditional_edges("bot", should_continue, ["tasks_tools_node", "schedule_memories"])
+builder.add_edge("tasks_tools_node", "bot")
 
 graph = builder.compile()
