@@ -65,8 +65,22 @@ def get_tasks():
         tasks = api.get_tasks(filter="workspace:Work")
         tasks_list = []
         for task in tasks:
-            tasks_list.append(dataclasses.asdict(task))
-        return json.dumps(tasks_list)
+            # get the task project
+            task_project = api.get_project(task.project_id)
+            task.project_name = task_project.name
+            tasks_list.append({
+                "id": task.id,
+                "content": task.content,
+                "description": task.description,
+                "is_completed": task.is_completed,
+                "labels": task.labels,
+                "order": task.order,
+                "priority": task.priority,
+                "project_name": task.project_name,
+                "due": task.due.date if task.due else None
+            })
+        # return a string separated by break lines
+        return "\n".join([json.dumps(task) for task in tasks_list])
     except Exception as error:
         return f"Error getting tasks: {str(error)}"
 
