@@ -21,6 +21,7 @@ class ChatConfigurable:
     delay_seconds: int = 10  # For debouncing memory creation
     system_prompt: str = SYSTEM_PROMPT
     memory_types: Optional[list[dict]] = None
+    todoist_workspace: str = "My Projects"
     """The memory_types for the memory assistant."""
 
     @classmethod

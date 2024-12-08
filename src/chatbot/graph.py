@@ -41,7 +41,7 @@ async def bot(
     # This lists ALL user memories in the provided namespace (up to the `limit`)
     # you can also filter by content.
 
-    tasks = get_tasks()
+    tasks = get_tasks(configurable.todoist_workspace)
     items = await store.asearch(namespace)
     logger.info(f"Found {tasks}")
     model = init_model(configurable.model).bind_tools(tasks_tools)

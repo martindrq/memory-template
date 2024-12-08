@@ -60,9 +60,12 @@ def add_or_update_task(task_id: str, project_id: str, content: str, description:
         return f"Error updating task: {str(error)}"
  
 
-def get_tasks():
+def get_tasks(workspace:str):
     try:
-        tasks = api.get_tasks(filter="workspace:Work")
+        filter=f"workspace:{workspace}"
+        if(workspace != "Work"):
+            filter = f"!workspace:Work"
+        tasks = api.get_tasks(filter=filter)
         tasks_list = []
         for task in tasks:
             # get the task project
@@ -77,7 +80,11 @@ def get_tasks():
                 "order": task.order,
                 "priority": task.priority,
                 "project_name": task.project_name,
-                "due": task.due.date if task.due else None
+                "due": { 
+                    "date": task.due.date, 
+                    "is_recurring":  task.due.is_recurring,
+                    "string": task.due.string,
+                } if task.due else None
             })
         # return a string separated by break lines
         return "\n".join([json.dumps(task) for task in tasks_list])
