@@ -45,11 +45,9 @@ def add_or_update_task(task_id: str, project_id: str, content: str, description:
                 labels=labels, 
                 order=order, 
                 priority=priority,
-                due={
-                    "date": due_date,
-                    "is_recurring": due_is_recurring,
-                    "string": due_string
-                })
+                due_string=due_string,
+                due_date=due_date,
+                due_is_recurring=due_is_recurring)
             return f"Task {task_id} has been updated successfully.",
             
         else:
@@ -61,11 +59,9 @@ def add_or_update_task(task_id: str, project_id: str, content: str, description:
                 labels=labels, 
                 order=order, 
                 priority=priority,
-                due={
-                    "date": due_date,
-                    "is_recurring": due_is_recurring,
-                    "string": due_string
-                })
+                due_string=due_string,
+                due_date=due_date,
+                due_is_recurring=due_is_recurring)
             return f"Task {task.id} has been added successfully"
 
     except Exception as error:
