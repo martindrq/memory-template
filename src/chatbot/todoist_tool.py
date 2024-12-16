@@ -13,14 +13,6 @@ class Due(BaseModel):
     string: str = Field(description="Human-defined date in arbitrary format.")
     date: str = Field(description="Date in YYYY-MM-DD format, corrected to user's timezone.")
     is_recurring: bool = Field(description="Flag indicating if the due date is recurring.")
-    datetime: Optional[str] = Field(
-        None,
-        description="RFC3339 date and time in UTC, if exact due time is set."
-    )
-    timezone: Optional[str] = Field(
-        None,
-        description="User's timezone definition if exact due time is set, e.g. 'Europe/Berlin' or 'UTC-01:00'."
-    )
 
 class Task(BaseModel):
     task_id: Optional[str] = Field(description="Task ID in case of update.")
@@ -42,10 +34,9 @@ class Task(BaseModel):
         description="Task priority from 1 (normal, default value) to 4 (urgent)."
     )
     due: Due = Field(description="Task due date.")
-    
 
 @tool(args_schema=Task)
-def add_or_update_task(task_id: str, project_id: str, content: str, description: str, is_completed: bool, labels: List[str], order: int, priority: int):
+def add_or_update_task(task_id: str, project_id: str, content: str, description: str, is_completed: bool, labels: List[str], order: int, priority: int, due_date:str, due_is_recurring: bool, due_string: str):
     """Call to add or update a user task."""
     try:
         if(task_id):
@@ -56,7 +47,12 @@ def add_or_update_task(task_id: str, project_id: str, content: str, description:
                 is_completed=is_completed, 
                 labels=labels, 
                 order=order, 
-                priority=priority)
+                priority=priority,
+                due={
+                    "date": due_date,
+                    "is_recurring": due_is_recurring,
+                    "string": due_string
+                })
             return f"Task {task_id} has been updated successfully.",
             
         else:
@@ -67,7 +63,12 @@ def add_or_update_task(task_id: str, project_id: str, content: str, description:
                 is_completed=is_completed, 
                 labels=labels, 
                 order=order, 
-                priority=priority)
+                priority=priority,
+                due={
+                    "date": due_date,
+                    "is_recurring": due_is_recurring,
+                    "string": due_string
+                })
             return f"Task {task.id} has been added successfully"
 
     except Exception as error:
