@@ -6,9 +6,21 @@ from langgraph.prebuilt import ToolNode
 from pydantic import BaseModel, Field
 from typing import List, Optional, Any
 import json
-import dataclasses
 
 api = TodoistAPI(os.environ.get("TODOIST_API_KEY"))
+
+class Due(BaseModel):
+    string: str = Field(description="Human-defined date in arbitrary format.")
+    date: str = Field(description="Date in YYYY-MM-DD format, corrected to user's timezone.")
+    is_recurring: bool = Field(description="Flag indicating if the due date is recurring.")
+    datetime: Optional[str] = Field(
+        None,
+        description="RFC3339 date and time in UTC, if exact due time is set."
+    )
+    timezone: Optional[str] = Field(
+        None,
+        description="User's timezone definition if exact due time is set, e.g. 'Europe/Berlin' or 'UTC-01:00'."
+    )
 
 class Task(BaseModel):
     task_id: Optional[str] = Field(description="Task ID in case of update.")
@@ -29,6 +41,8 @@ class Task(BaseModel):
     priority: int = Field(
         description="Task priority from 1 (normal, default value) to 4 (urgent)."
     )
+    due: Due = Field(description="Task due date.")
+    
 
 @tool(args_schema=Task)
 def add_or_update_task(task_id: str, project_id: str, content: str, description: str, is_completed: bool, labels: List[str], order: int, priority: int):
