@@ -9,11 +9,6 @@ import json
 
 api = TodoistAPI(os.environ.get("TODOIST_API_KEY"))
 
-class Due(BaseModel):
-    string: str = Field(description="Human-defined date in arbitrary format.")
-    date: str = Field(description="Date in YYYY-MM-DD format, corrected to user's timezone.")
-    is_recurring: bool = Field(description="Flag indicating if the due date is recurring.")
-
 class Task(BaseModel):
     task_id: Optional[str] = Field(description="Task ID in case of update.")
     project_id: str = Field(description="Task's project ID.")
@@ -33,7 +28,9 @@ class Task(BaseModel):
     priority: int = Field(
         description="Task priority from 1 (normal, default value) to 4 (urgent)."
     )
-    due: Due = Field(description="Task due date.")
+    due_date: str = Field(description="Due date in YYYY-MM-DD format, corrected to user's timezone.")
+    due_is_recurring: bool = Field(description="Flag indicating if the due date is recurring.")
+    due_string: str = Field(description="Human-defined due date in arbitrary format.")
 
 @tool(args_schema=Task)
 def add_or_update_task(task_id: str, project_id: str, content: str, description: str, is_completed: bool, labels: List[str], order: int, priority: int, due_date:str, due_is_recurring: bool, due_string: str):
