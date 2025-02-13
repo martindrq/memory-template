@@ -43,7 +43,6 @@ async def bot(
 
     tasks = get_tasks(configurable.todoist_workspace)
     items = await store.asearch(namespace)
-    logger.info(f"Found {tasks}")
     model = init_model(configurable.model).bind_tools(tasks_tools)
     prompt = configurable.system_prompt.format(
         user_info=format_memories(items),
