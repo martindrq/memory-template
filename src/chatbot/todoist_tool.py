@@ -35,9 +35,12 @@ class Task(BaseModel):
     priority: int = Field(
         description="Task priority from 1 (normal, default value) to 4 (urgent)."
     )
+    due_date: str = Field(description="Due date in YYYY-MM-DD format, corrected to user's timezone.")
+    due_is_recurring: bool = Field(description="Flag indicating if the due date is recurring.")
+    due_string: str = Field(description="Human-defined due date in arbitrary format.")
 
 @tool(args_schema=Task)
-def add_or_update_task(task_id: str, project_id: str, content: str, description: str, is_completed: bool, labels: List[str], order: int, priority: int):
+def add_or_update_task(task_id: str, project_id: str, content: str, description: str, is_completed: bool, labels: List[str], order: int, priority: int, due_date:str, due_is_recurring: bool, due_string: str):
     """Call to add or update a user task."""
     try:
         if(task_id):
@@ -48,7 +51,10 @@ def add_or_update_task(task_id: str, project_id: str, content: str, description:
                 is_completed=is_completed, 
                 labels=labels, 
                 order=order, 
-                priority=priority)
+                priority=priority,
+                due_string=due_string,
+                due_date=due_date,
+                due_is_recurring=due_is_recurring)
             return f"Task {task_id} has been updated successfully.",
             
         else:
@@ -59,7 +65,10 @@ def add_or_update_task(task_id: str, project_id: str, content: str, description:
                 is_completed=is_completed, 
                 labels=labels, 
                 order=order, 
-                priority=priority)
+                priority=priority,
+                due_string=due_string,
+                due_date=due_date,
+                due_is_recurring=due_is_recurring)
             return f"Task {task.id} has been added successfully"
 
     except Exception as error:
