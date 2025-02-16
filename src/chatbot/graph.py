@@ -50,7 +50,7 @@ async def bot(
         actual_tasks=tasks,
     )
     m = await model.ainvoke(
-        [{"role": "system", "content": prompt}, *state.messages],
+        [{"role": "user", "content": prompt}, *state.messages],
     )
 
     return {"messages": [m]}

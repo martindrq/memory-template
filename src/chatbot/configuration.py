@@ -17,7 +17,7 @@ class ChatConfigurable:
     mem_assistant_id: str = (
         "memory_graph"  # update to the UUID if you configure a custom assistant
     )
-    model: str = "openai/gpt-4o"
+    model: str = "openai/o3-mini"
     delay_seconds: int = 10  # For debouncing memory creation
     system_prompt: str = SYSTEM_PROMPT
     memory_types: Optional[list[dict]] = None
