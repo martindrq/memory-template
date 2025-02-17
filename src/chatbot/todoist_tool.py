@@ -18,16 +18,11 @@ api_sync = TodoistAPIAsync(os.environ.get("TODOIST_API_KEY"))
 
 class Task(BaseModel):
     task_id: Optional[str] = Field(description="Task ID in case of update.")
-    project_id: str = Field(description="Task's project ID.")
     content: str = Field(
         description="Task content. This value may contain markdown-formatted text and hyperlinks. Details on markdown support can be found in the Text Formatting article in the Help Center."
     )
     description: str = Field(
         description="A description for the task. This value may contain markdown-formatted text and hyperlinks. Details on markdown support can be found in the Text Formatting article in the Help Center."
-    )
-    is_completed: bool = Field(description="Flag to mark completed tasks.")
-    labels: List[str] = Field(
-        description="The task's labels (a list of names that may represent either personal or shared labels)."
     )
     order: int = Field(
         description="Position under the same parent or project for top-level tasks (read-only)."
@@ -40,7 +35,7 @@ class Task(BaseModel):
     due_string: str = Field(description="Human-defined due date in arbitrary format.")
 
 @tool(args_schema=Task)
-def add_or_update_task(task_id: str, project_id: str, content: str, description: str, is_completed: bool, labels: List[str], order: int, priority: int, due_date:str, due_is_recurring: bool, due_string: str):
+def add_or_update_task(task_id: str, content: str, description: str,  labels: List[str], order: int, priority: int, due_date:str, due_is_recurring: bool, due_string: str):
     """Call to add or update a user task."""
     try:
         if(task_id):
@@ -48,8 +43,6 @@ def add_or_update_task(task_id: str, project_id: str, content: str, description:
                 task_id=task_id, 
                 content=content, 
                 description=description, 
-                is_completed=is_completed, 
-                labels=labels, 
                 order=order, 
                 priority=priority,
                 due_string=due_string,
@@ -59,11 +52,8 @@ def add_or_update_task(task_id: str, project_id: str, content: str, description:
             
         else:
             task = api.add_task(
-                project_id=project_id, 
                 content=content, 
                 description=description, 
-                is_completed=is_completed, 
-                labels=labels, 
                 order=order, 
                 priority=priority,
                 due_string=due_string,
