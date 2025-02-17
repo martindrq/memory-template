@@ -24,9 +24,6 @@ class Task(BaseModel):
     description: str = Field(
         description="A description for the task. This value may contain markdown-formatted text and hyperlinks. Details on markdown support can be found in the Text Formatting article in the Help Center."
     )
-    order: int = Field(
-        description="Position under the same parent or project for top-level tasks (read-only)."
-    )
     priority: int = Field(
         description="Task priority from 1 (normal, default value) to 4 (urgent)."
     )
@@ -35,7 +32,7 @@ class Task(BaseModel):
     due_string: str = Field(description="Human-defined due date in arbitrary format.")
 
 @tool(args_schema=Task)
-def add_or_update_task(task_id: str, content: str, description: str,  labels: List[str], order: int, priority: int, due_date:str, due_is_recurring: bool, due_string: str):
+def add_or_update_task(task_id: str, content: str, description: str, priority: int, due_date:str, due_is_recurring: bool, due_string: str):
     """Call to add or update a user task."""
     try:
         if(task_id):
