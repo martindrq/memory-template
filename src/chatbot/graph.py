@@ -13,7 +13,7 @@ from langgraph_sdk import get_client
 from typing_extensions import Annotated
 
 from chatbot.configuration import ChatConfigurable
-from chatbot.todoist_tool import get_tasks, tasks_tools_node, tasks_tools
+from chatbot.todoist_tool import tasks_tools_node, tasks_tools
 from chatbot.utils import format_memories, init_model
 
 logger = logging.getLogger("memory")
@@ -40,14 +40,12 @@ async def bot(
     namespace = (configurable.user_id,)
     # This lists ALL user memories in the provided namespace (up to the `limit`)
     # you can also filter by content.
-
-    tasks = get_tasks(configurable.todoist_workspace)
     items = await store.asearch(namespace)
     model = init_model(configurable.model).bind_tools(tasks_tools)
     prompt = configurable.system_prompt.format(
         user_info=format_memories(items),
+        todoist_workspace=configurable.todoist_workspace,
         time=datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S"),
-        actual_tasks=tasks,
     )
     m = await model.ainvoke(
         [{"role": "user", "content": prompt}, *state.messages],

@@ -108,8 +108,9 @@ def get_completed_tasks():
         logger.error(f"Error getting completed tasks: {str(error)}")
         return f"Error closing task: {str(error)}"
  
-
-def get_tasks(workspace:str):
+@tool
+def get_pending_tasks(workspace:str):
+    """Call to get the pendings tasks."""
     try:
         filter=f"workspace:{workspace}"
         if(workspace != "Work"):
@@ -140,5 +141,7 @@ def get_tasks(workspace:str):
     except Exception as error:
         return f"Error getting tasks: {str(error)}"
 
-tasks_tools = [add_or_update_task, close_a_task, get_completed_tasks]
+
+tasks_tools = [add_or_update_task, close_a_task, get_completed_tasks, get_pending_tasks]
 tasks_tools_node = ToolNode(tasks_tools)
+
